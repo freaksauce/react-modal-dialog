@@ -15,51 +15,50 @@ const styles = {
   }
 }
 
-export default class FlexDialog extends React.Component {
-  static propTypes = {
-    className: PropTypes.string,
-    useDefaultStyle: PropTypes.bool.isRequired,
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    margin: PropTypes.number,
-    style: PropTypes.object
-  }
-  static defaultProps = {
-    width: 'auto',
-    margin: 20,
-    useDefaultStyle: true,
-    className: '',
-    style: {}
-  }
-  render = () => {
-    const {
-      props: {
-        className,
-        margin,
-        style,
-        width,
-        useDefaultStyle,
-        ...rest
-      }
-    } = this
+const FlexDialog = props => {
+  const {
+    className,
+    margin,
+    style,
+    width,
+    useDefaultStyle,
+    ...rest
+  } = props
 
-    const combinedClassName = classNames(className, {
-      [inject(styles.dialog)]: useDefaultStyle
-    })
+  const combinedClassName = classNames(className, {
+    [inject(styles.dialog)]: useDefaultStyle
+  })
 
-    const combinedStyle = {
-      ...style,
-      width,
-      padding: margin,
-      boxSizing: 'border-box'
-    }
-
-    return (
-      <UnstyledFlexDialog
-        style={combinedStyle}
-        className={combinedClassName}
-        classReference={className}
-        {...rest}
-      />
-    )
+  const combinedStyle = {
+    ...style,
+    width,
+    padding: margin,
+    boxSizing: 'border-box'
   }
+
+  return (
+    <UnstyledFlexDialog
+      style={combinedStyle}
+      className={combinedClassName}
+      classReference={className}
+      {...rest}
+    />
+  )
 }
+
+FlexDialog.propTypes = {
+  className: PropTypes.string,
+  useDefaultStyle: PropTypes.bool.isRequired,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  margin: PropTypes.number,
+  style: PropTypes.object
+}
+FlexDialog.defaultProps = {
+  width: 'auto',
+  margin: 20,
+  useDefaultStyle: true,
+  className: '',
+  style: {}
+}
+
+export default FlexDialog

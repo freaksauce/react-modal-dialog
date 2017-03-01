@@ -1,21 +1,11 @@
-import React, { PropTypes } from 'react'
+import { PropTypes, Component } from 'react'
 import ReactDOM from 'react-dom'
 
 // Render into subtree is necessary for parent contexts to transfer over
 // For example, for react-router
 const renderSubtreeIntoContainer = ReactDOM.unstable_renderSubtreeIntoContainer
 
-export default class ModalPortal extends React.Component {
-  static propTypes = {
-    children: PropTypes.node,
-    onModalDidMount: PropTypes.func, // optional, called on mount
-    onModalWillUnmount: PropTypes.func // optional, called on unmount
-  }
-  static defaultProps = {
-    children: null,
-    onModalDidMount: () => {},
-    onModalWillUnmount: () => {}
-  }
+class ModalPortal extends Component {
   componentDidMount = () => {
     // Create a div and append it to the body
     this._target = document.body.appendChild(document.createElement('div'))
@@ -67,3 +57,16 @@ export default class ModalPortal extends React.Component {
   _component = null // ReactComponent, which is mounted on the target
   render = () => null // This doesn't actually return anything to render
 }
+
+ModalPortal.propTypes = {
+  children: PropTypes.node,
+  onModalDidMount: PropTypes.func, // optional, called on mount
+  onModalWillUnmount: PropTypes.func // optional, called on unmount
+}
+ModalPortal.defaultProps = {
+  children: null,
+  onModalDidMount: () => {},
+  onModalWillUnmount: () => {}
+}
+
+export default ModalPortal

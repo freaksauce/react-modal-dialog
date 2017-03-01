@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React, { PropTypes, Component } from 'react'
 import dynamics from 'dynamics.js'
 import EventStack from 'active-event-stack'
 import keycode from 'keycode'
@@ -21,21 +21,7 @@ const styles = {
   }
 }
 
-export default class UnstyledFlexDialog extends React.Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    componentIsLeaving: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    style: PropTypes.object,
-    classReference: PropTypes.string,
-    className: PropTypes.string
-  }
-  static defaultProps = {
-    style: {},
-    classReference: '',
-    componentIsLeaving: false,
-    className: 'iagModal'
-  }
+class UnstyledFlexDialog extends Component {
   componentWillMount = () => {
     /**
      * This is done in the componentWillMount instead of the componentDidMount
@@ -122,8 +108,7 @@ export default class UnstyledFlexDialog extends React.Component {
         componentIsLeaving, // eslint-disable-line no-unused-vars, this line is used to remove parameters from rest
         onClose,
         style,
-        className,
-        ...rest
+        className
     } = this.props
 
     return (
@@ -164,3 +149,20 @@ export default class UnstyledFlexDialog extends React.Component {
     )
   }
 }
+
+UnstyledFlexDialog.propTypes = {
+  children: PropTypes.node.isRequired,
+  componentIsLeaving: PropTypes.bool,
+  onClose: PropTypes.func.isRequired,
+  style: PropTypes.object,
+  classReference: PropTypes.string,
+  className: PropTypes.string
+}
+UnstyledFlexDialog.defaultProps = {
+  style: {},
+  classReference: '',
+  componentIsLeaving: false,
+  className: 'iagModal'
+}
+
+export default UnstyledFlexDialog

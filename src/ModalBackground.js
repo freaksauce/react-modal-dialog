@@ -1,20 +1,6 @@
 import React, { PropTypes, Component } from 'react'
 
-export default class ModalBackground extends Component {
-  static propTypes = {
-    onClose: PropTypes.func,
-    duration: PropTypes.number.isRequired,
-    backgroundColor: PropTypes.string.isRequired,
-    zIndex: PropTypes.number.isRequired,
-    children: PropTypes.node
-  }
-  static defaultProps = {
-    duration: 300,
-    backgroundColor: '#182738',
-    zIndex: 5,
-    onClose: () => {},
-    children: null
-  }
+class ModalBackground extends Component {
   state = {
     // This is set to false as soon as the component has mounted
     // This allows the component to change its css and animate in
@@ -96,3 +82,20 @@ export default class ModalBackground extends Component {
     )
   }
 }
+
+ModalBackground.propTypes = {
+  onClose: PropTypes.func,
+  duration: PropTypes.number.isRequired,
+  backgroundColor: PropTypes.string.isRequired,
+  zIndex: PropTypes.number.isRequired,
+  children: PropTypes.node
+}
+ModalBackground.defaultProps = {
+  duration: 300,
+  backgroundColor: '#182738',
+  zIndex: 5,
+  onClose: () => {},
+  children: null
+}
+
+export default ModalBackground

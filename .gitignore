@@ -1,6 +1,7 @@
 node_modules
-lib
 *.sublime*
+/lib
 build
 npm-debug.log
 /index.js
+.DS_Store

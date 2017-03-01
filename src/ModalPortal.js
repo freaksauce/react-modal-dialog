@@ -1,33 +1,37 @@
-import React, { PropTypes } from 'react';
-import ReactDOM from 'react-dom';
+import React, { PropTypes } from 'react'
+import ReactDOM from 'react-dom'
 
 // Render into subtree is necessary for parent contexts to transfer over
 // For example, for react-router
-const renderSubtreeIntoContainer = ReactDOM.unstable_renderSubtreeIntoContainer;
+const renderSubtreeIntoContainer = ReactDOM.unstable_renderSubtreeIntoContainer
 
 export default class ModalPortal extends React.Component {
   static propTypes = {
-    onClose: PropTypes.func, // This is called when the dialog should close
     children: PropTypes.node,
     onModalDidMount: PropTypes.func, // optional, called on mount
-    onModalWillUnmount: PropTypes.func, // optional, called on unmount
-  };
+    onModalWillUnmount: PropTypes.func // optional, called on unmount
+  }
+  static defaultProps = {
+    children: null,
+    onModalDidMount: () => {},
+    onModalWillUnmount: () => {}
+  }
   componentDidMount = () => {
     // Create a div and append it to the body
-    this._target = document.body.appendChild(document.createElement('div'));
+    this._target = document.body.appendChild(document.createElement('div'))
 
     // Mount a component on that div
-    this._component = renderSubtreeIntoContainer(this, this.props.children, this._target);
+    this._component = renderSubtreeIntoContainer(this, this.props.children, this._target)
 
     // A handler call in case you want to do something when a modal opens, like add a class to the body or something
     if (typeof this.props.onModalDidMount === 'function') {
-      this.props.onModalDidMount();
+      this.props.onModalDidMount()
     }
-  };
+  }
   componentDidUpdate = () => {
     // When the child component updates, we have to make sure the content rendered to the DOM is updated to
-    this._component = renderSubtreeIntoContainer(this, this.props.children, this._target);
-  };
+    this._component = renderSubtreeIntoContainer(this, this.props.children, this._target)
+  }
   componentWillUnmount = () => {
     /**
      * Let this be some discussion about fading out the components on unmount.
@@ -42,24 +46,24 @@ export default class ModalPortal extends React.Component {
       // Modal will unmount now
       // Call a handler, like onModalDidMount
       if (typeof this.props.onModalWillUnmount === 'function') {
-        this.props.onModalWillUnmount();
+        this.props.onModalWillUnmount()
       }
 
       // Remove the node and clean up after the target
-      ReactDOM.unmountComponentAtNode(this._target);
-      document.body.removeChild(this._target);
-    };
+      ReactDOM.unmountComponentAtNode(this._target)
+      document.body.removeChild(this._target)
+    }
 
     // A similar API to react-transition-group
-    if (typeof this._component.componentWillLeave == 'function') {
+    if (typeof this._component.componentWillLeave === 'function') {
       // Pass the callback to be called on completion
-      this._component.componentWillLeave(done);
+      this._component.componentWillLeave(done)
     } else {
       // Call completion immediately
-      done();
+      done()
     }
-  };
-  _target = null; // HTMLElement, a div that is appended to the body
-  _component = null; // ReactComponent, which is mounted on the target
-  render = () => null; // This doesn't actually return anything to render
+  }
+  _target = null // HTMLElement, a div that is appended to the body
+  _component = null // ReactComponent, which is mounted on the target
+  render = () => null // This doesn't actually return anything to render
 }

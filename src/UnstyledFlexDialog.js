@@ -1,10 +1,10 @@
-import React, { PropTypes } from 'react';
-import ReactDOM from 'react-dom';
-import dynamics from 'dynamics.js';
-import CloseCircle from './CloseCircle';
-import EventStack from 'active-event-stack';
-import keycode from 'keycode';
-import { inject } from 'narcissus';
+import React, { PropTypes } from 'react'
+import dynamics from 'dynamics.js'
+import EventStack from 'active-event-stack'
+import keycode from 'keycode'
+import { inject } from 'narcissus'
+import CloseCircle from './CloseCircle'
+import { hideRestOfDom, unhideDom } from './tabHelper'
 
 const styles = {
   closeButton: {
@@ -16,18 +16,26 @@ const styles = {
     height: 40,
     transition: 'transform 0.1s',
     '&&:hover': {
-      transform: 'scale(1.1)',
-    },
-  },
-};
+      transform: 'scale(1.1)'
+    }
+  }
+}
 
 export default class UnstyledFlexDialog extends React.Component {
   static propTypes = {
-    children: PropTypes.node,
+    children: PropTypes.node.isRequired,
     componentIsLeaving: PropTypes.bool,
-    onClose: PropTypes.func,
+    onClose: PropTypes.func.isRequired,
     style: PropTypes.object,
-  };
+    classReference: PropTypes.string,
+    className: PropTypes.string
+  }
+  static defaultProps = {
+    style: {},
+    classReference: '',
+    componentIsLeaving: false,
+    className: 'iagModal'
+  }
   componentWillMount = () => {
     /**
      * This is done in the componentWillMount instead of the componentDidMount
@@ -35,119 +43,124 @@ export default class UnstyledFlexDialog extends React.Component {
      * for events after its parent
      */
     this.eventToken = EventStack.addListenable([
-      [ 'click', this.handleGlobalClick ],
-      [ 'keydown', this.handleGlobalKeydown ],
-    ]);
-  };
+      ['click', this.handleGlobalClick],
+      ['keydown', this.handleGlobalKeydown]
+    ])
+  }
   componentDidMount = () => {
-    this.animateIn();
-  };
+    this.animateIn()
+    hideRestOfDom(this.props.classReference)
+    document.body.classList.add('modal-open')
+  }
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.componentIsLeaving && !this.props.componentIsLeaving) {
-      const node = ReactDOM.findDOMNode(this.refs.self);
+      const node = this.flexDialog
       dynamics.animate(node, {
         scale: 1.2,
-        opacity: 0,
+        opacity: 0
       }, {
         duration: 300,
-        type: dynamics.easeIn,
-      });
+        type: dynamics.easeIn
+      })
     }
-  };
+  }
   componentWillUnmount = () => {
-    EventStack.removeListenable(this.eventToken);
-  };
-  didAnimateInAlready = false;
+    EventStack.removeListenable(this.eventToken)
+    unhideDom()
+    document.body.classList.remove('modal-open')
+  }
+  didAnimateInAlready = false
   shouldClickDismiss = (event) => {
-    const { target } = event;
+    const { target } = event
     // This piece of code isolates targets which are fake clicked by things
     // like file-drop handlers
     if (target.tagName === 'INPUT' && target.type === 'file') {
-      return false;
+      return false
     }
 
-    if (target === this.refs.self || this.refs.self.contains(target)) return false;
-    return true;
-  };
+    if (target === this.flexDialog || this.flexDialog.contains(target)) return false
+    return true
+  }
   handleGlobalClick = (event) => {
     if (this.shouldClickDismiss(event)) {
-      if (typeof this.props.onClose == 'function') {
-        this.props.onClose();
+      if (typeof this.props.onClose === 'function') {
+        this.props.onClose()
       }
     }
-  };
+  }
   handleGlobalKeydown = (event) => {
     if (keycode(event) === 'esc') {
-      if (typeof this.props.onClose == 'function') {
-        this.props.onClose();
+      if (typeof this.props.onClose === 'function') {
+        this.props.onClose()
       }
     }
-  };
+  }
   animateIn = () => {
-    this.didAnimateInAlready = true;
+    this.didAnimateInAlready = true
 
     // Animate this node once it is mounted
-    const node = ReactDOM.findDOMNode(this.refs.self);
+    const node = this.flexDialog
 
     // This sets the scale...
     if (document.body.style.transform == null) {
-      node.style.WebkitTransform = 'scale(0.5)';
+      node.style.WebkitTransform = 'scale(0.5)'
     } else {
-      node.style.transform = 'scale(0.5)';
+      node.style.transform = 'scale(0.5)'
     }
 
     dynamics.animate(node, {
-      scale: 1,
+      scale: 1
     }, {
       type: dynamics.spring,
       duration: 500,
-      friction: 400,
-    });
-  };
+      friction: 400
+    })
+  }
   render = () => {
     const {
-      props: {
         children,
         componentIsLeaving, // eslint-disable-line no-unused-vars, this line is used to remove parameters from rest
         onClose,
         style,
-        ...rest,
-      },
-    } = this;
+        className,
+        ...rest
+    } = this.props
 
-    return <div
-      style={{
-        position: 'absolute',
-        display: 'flex',
-        width: '100%',
-        minHeight: '100%',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        flexDirection: 'column',
-        overflowY: 'auto',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
-        <div
-          ref="self"
-          style={{
-            display: 'block',
-            backgroundColor: 'white',
-            // Position is important for the close circle
-            position: 'relative',
-            ...style,
-          }}
-          {...rest}
-        >
-          {
-            onClose != null &&
-            <a className={inject(styles.closeButton)} onClick={onClose}>
-              <CloseCircle diameter={40}/>
-            </a>
-          }
-          {children}
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          display: 'flex',
+          width: '100%',
+          minHeight: '100%',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          flexDirection: 'column',
+          overflowY: 'auto'
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
+          <div
+            ref={(c) => { this.flexDialog = c }}
+            style={{
+              display: 'block',
+              backgroundColor: 'white',
+              // Position is important for the close circle
+              position: 'relative',
+              ...style
+            }}
+            className={className}
+          >
+            {
+              onClose != null &&
+              <a className={inject(styles.closeButton)} onClick={onClose}>
+                <CloseCircle diameter={40} />
+              </a>
+            }
+            {children}
+          </div>
         </div>
       </div>
-    </div>;
-  };
+    )
+  }
 }

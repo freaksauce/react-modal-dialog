@@ -1,16 +1,19 @@
 import React, { PropTypes, Component } from 'react'
 
 class ModalBackground extends Component {
-  state = {
-    // This is set to false as soon as the component has mounted
-    // This allows the component to change its css and animate in
-    transparent: true
+  constructor() {
+    super()
+    this.state = {
+      // This is set to false as soon as the component has mounted
+      // This allows the component to change its css and animate in
+      transparent: true
+    }
   }
-  componentDidMount = () => {
+  componentDidMount() {
     // Create a delay so CSS will animate
     requestAnimationFrame(() => this.setState({ transparent: false }))
   }
-  getChild = () => {
+  getChild() {
     const child = React.Children.only(this.props.children)
     const cloneProps = {
       onClose: this.props.onClose,
@@ -21,7 +24,7 @@ class ModalBackground extends Component {
     }
     return React.cloneElement(child, cloneProps)
   }
-  componentWillLeave = (callback) => {
+  componentWillLeave(callback) {
     this.setState({
       transparent: true,
       componentIsLeaving: true
@@ -33,7 +36,7 @@ class ModalBackground extends Component {
       callback()
     }, this.props.duration)
   }
-  render = () => {
+  render() {
     const { transparent } = this.state
 
     const overlayStyle = {

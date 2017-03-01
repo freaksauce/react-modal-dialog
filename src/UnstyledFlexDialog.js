@@ -22,7 +22,12 @@ const styles = {
 }
 
 class UnstyledFlexDialog extends Component {
-  componentWillMount = () => {
+  constructor() {
+    super()
+    this.didAnimateInAlready = false
+    this.handleGlobalClick = this.handleGlobalClick.bind(this)
+  }
+  componentWillMount() {
     /**
      * This is done in the componentWillMount instead of the componentDidMount
      * because this way, a modal that is a child of another will have register
@@ -33,12 +38,12 @@ class UnstyledFlexDialog extends Component {
       ['keydown', this.handleGlobalKeydown]
     ])
   }
-  componentDidMount = () => {
+  componentDidMount() {
     this.animateIn()
     hideRestOfDom(this.props.classReference)
     document.body.classList.add('modal-open')
   }
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.componentIsLeaving && !this.props.componentIsLeaving) {
       const node = this.flexDialog
       dynamics.animate(node, {
@@ -50,13 +55,12 @@ class UnstyledFlexDialog extends Component {
       })
     }
   }
-  componentWillUnmount = () => {
+  componentWillUnmount() {
     EventStack.removeListenable(this.eventToken)
     unhideDom()
     document.body.classList.remove('modal-open')
   }
-  didAnimateInAlready = false
-  shouldClickDismiss = (event) => {
+  shouldClickDismiss(event) {
     const { target } = event
     // This piece of code isolates targets which are fake clicked by things
     // like file-drop handlers
@@ -67,21 +71,21 @@ class UnstyledFlexDialog extends Component {
     if (target === this.flexDialog || this.flexDialog.contains(target)) return false
     return true
   }
-  handleGlobalClick = (event) => {
+  handleGlobalClick(event) {
     if (this.shouldClickDismiss(event)) {
       if (typeof this.props.onClose === 'function') {
         this.props.onClose()
       }
     }
   }
-  handleGlobalKeydown = (event) => {
+  handleGlobalKeydown(event) {
     if (keycode(event) === 'esc') {
       if (typeof this.props.onClose === 'function') {
         this.props.onClose()
       }
     }
   }
-  animateIn = () => {
+  animateIn() {
     this.didAnimateInAlready = true
 
     // Animate this node once it is mounted
@@ -102,7 +106,7 @@ class UnstyledFlexDialog extends Component {
       friction: 400
     })
   }
-  render = () => {
+  render() {
     const {
         children,
         componentIsLeaving, // eslint-disable-line no-unused-vars, this line is used to remove parameters from rest
@@ -138,7 +142,7 @@ class UnstyledFlexDialog extends Component {
           >
             {
               onClose != null &&
-              <a className={inject(styles.closeButton)} onClick={onClose}>
+              <a className={inject(styles.closeButton)} onClick={this.onClose}>
                 <CloseCircle diameter={40} />
               </a>
             }

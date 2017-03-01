@@ -6,7 +6,12 @@ import ReactDOM from 'react-dom'
 const renderSubtreeIntoContainer = ReactDOM.unstable_renderSubtreeIntoContainer
 
 class ModalPortal extends Component {
-  componentDidMount = () => {
+  constructor() {
+    super()
+    this._target = null // HTMLElement, a div that is appended to the body
+    this._component = null // ReactComponent, which is mounted on the target
+  }
+  componentDidMount() {
     // Create a div and append it to the body
     this._target = document.body.appendChild(document.createElement('div'))
 
@@ -18,11 +23,11 @@ class ModalPortal extends Component {
       this.props.onModalDidMount()
     }
   }
-  componentDidUpdate = () => {
+  componentDidUpdate() {
     // When the child component updates, we have to make sure the content rendered to the DOM is updated to
     this._component = renderSubtreeIntoContainer(this, this.props.children, this._target)
   }
-  componentWillUnmount = () => {
+  componentWillUnmount() {
     /**
      * Let this be some discussion about fading out the components on unmount.
      * Right now, there is the issue that if a stack of components are layered
@@ -53,9 +58,9 @@ class ModalPortal extends Component {
       done()
     }
   }
-  _target = null // HTMLElement, a div that is appended to the body
-  _component = null // ReactComponent, which is mounted on the target
-  render = () => null // This doesn't actually return anything to render
+  render() {
+    return null
+  } // This doesn't actually return anything to render
 }
 
 ModalPortal.propTypes = {
